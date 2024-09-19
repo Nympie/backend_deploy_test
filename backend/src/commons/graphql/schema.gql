@@ -1,0 +1,83 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Board {
+  id: String!
+  writer: String!
+  title: String!
+  content: String!
+}
+
+type ProductCategory {
+  id: String!
+  name: String!
+}
+
+type ProductSalesLocation {
+  id: String!
+  address: String!
+  address_detail: String!
+  lat: Float!
+  lng: Float!
+  meeting_time: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ProductTag {
+  id: String!
+  name: String!
+  products: [Product!]!
+}
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+}
+
+type Product {
+  id: String!
+  name: String!
+  description: String!
+  price: Int!
+  is_sold_out: Boolean!
+  product_sales_location: ProductSalesLocation!
+  product_category: ProductCategory!
+  user: User!
+  product_tags: [ProductTag!]!
+}
+
+type Query {
+  fetchBoards: [Board!]
+  fetchProduct(productId: String!): Product!
+  fetchProducts: [Product!]!
+}
+
+type Mutation {
+  createBoard(createBoardInput: CreateBoardInput!): String!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+}
+
+input CreateBoardInput {
+  writer: String!
+  title: String!
+  content: String!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Int!
+}
+
+input UpdateProductInput {
+  name: String
+  description: String
+  price: Int
+}

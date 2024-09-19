@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>결제페이지</title>
+        <!-- axios -->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <!-- jQuery -->
+        <script>
+            type = 'text/javascript';
+            src = 'https://code.jquery.com/jquery-1.12.4.min.js';
+        </script>
+        <!-- import.payment.js -->
+        <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+        <script>
+            const requestPayment = () => {
+                const IMP = window.IMP;
+                IMP.init('imp60553170');
+
+                IMP.request_pay(
+                    {
+                        // pg사 종류
+                        pg: 'kakaopay',
+                        pay_method: 'card',
+                        // 고유 주문 번호
+                        merchant_uid: 'ORD20190131-000011',
+                        name: '노르웨이 회전 의자',
+                        // 제품 가격
+                        amount: 100,
+                        buyer_email: 'gildong@gmail.com',
+                        buyer_name: '홍길동',
+                        buyer_tel: '010-4242-4242',
+                        buyer_addr: '서울특별시 강남구 신사동',
+                        buyer_postcode: '01181',
+                    },
+                    function (rsp) {
+                        console.log(rsp);
+                        if (rsp.success) {
+                            // 결제 성공 시 로직
+                            alert('결제에 성공햇습니다.');
+                            // 백엔드에 데이터 저장
+                            axios.post(
+                                'https://localhost:3000/graphql',
+                                {
+                                    query: `
+                                        mutation{
+                                            createPointTransaction(
+                                                impUid: "${rsp.imp_uid}",
+                                                amount: ${rsp.paid_amount},
+                                            ){
+                                                id
+                                                impUid
+                                                amount
+                                                status
+                                            }
+                                        }
+                                    `,
+                                },
+                                {
+                                    headers: {
+                                        Authorization: 'Bearer accessToken',
+                                    },
+                                }
+                            );
+                        } else {
+                            // 결제 실패 시 로직
+                            alert('결제에 실패했습니다. 다시 시도해주세요.');
+                        }
+                    }
+                );
+            };
+        </script>
+    </head>
+    <body>
+        <button onclick="requestPayment()">결제하기</button>
+    </body>
+</html>
